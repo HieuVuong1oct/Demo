@@ -1,10 +1,11 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-const Pagination = ({totalItems, itemsPerPage, currentPage, setCurrentPage}) => {
+const Pagination = ({totalItems, itemsPerPage, currentPage, setCurrentPage, goToPage}) => {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     const handleClick = (pageNumber) => {
         setCurrentPage(pageNumber);
+        goToPage(pageNumber);
     }
 
     return (
@@ -22,6 +23,7 @@ const Pagination = ({totalItems, itemsPerPage, currentPage, setCurrentPage}) => 
                 
                 >
                     {index+1}
+                    
                 </button>
             ))}
             <button
