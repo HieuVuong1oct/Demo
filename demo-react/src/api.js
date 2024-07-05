@@ -1,6 +1,7 @@
 const LIST_DATA = [
-  { name: "Toán", author: "BGD", SX: "2022" },
   { name: "Toán 2", author: "BGD", SX: "2023" },
+  { name: "Toán", author: "BGD", SX: "2022" },
+
   { name: "Toán 3", author: "BGD", SX: "2024" },
   { name: "Toán 4", author: "BGD", SX: "2024" },
   { name: "Toán 5", author: "BGD", SX: "2024" },
@@ -22,11 +23,11 @@ const LIST_DATA = [
   { name: "Anh 3", author: "BGD", SX: "2024" },
   { name: "Lí", author: "BGD", SX: "2024" },
   { name: "Hóa", author: "BGD", SX: "2024" },
-  { name: "Sinh", author: "BGD", SX: "2024" },
-  { name: "Sử", author: "BGD", SX: "2024" },
-  { name: "Địa", author: "BGD", SX: "2024" },
-  { name: "Công nghệ", author: "BGD", SX: "2024" },
-  { name: "Công dân", author: "BGD", SX: "2024" },
+  { name: "Sinh", author: "BGD", SX: "2023" },
+  { name: "Sử", author: "BGD", SX: "2023" },
+  { name: "Địa", author: "BGD", SX: "2022" },
+  { name: "Công nghệ", author: "BGD", SX: "2022" },
+  { name: "Công dân", author: "BGD", SX: "2022" },
 ]; // dữ liệu từ api có dạng này
 
 function sortList(list, sortBy, sortKey) {
@@ -49,6 +50,7 @@ const getData = ({
   pageActive,
   perPage,
 }) => {
+  
   let database = JSON.parse(JSON.stringify(LIST_DATA));
 
   // lay danh sach thoa man searchKey + searchValue
@@ -60,11 +62,13 @@ const getData = ({
   // phan trang theo perPage va tra ve pageActive
   const total = database.length;
   const totalPage = Math.ceil(total / perPage);
+
   const list = database.filter(
     (item, index) =>
       index >= (pageActive - 1) * perPage && index < pageActive * perPage
   );
 
+  console.log(pageActive);
   return {
     list,
     page: {
@@ -72,7 +76,17 @@ const getData = ({
       pageActive,
       perPage,
     },
+    searchValue
   };
 };
 
 export { getData };
+
+
+ // init page => khởi tạo dữ liệu theo url => useEffect để sau khi láy hết dữ liệu từ url thì get list init về
+
+  // các hàm xử lý phân trang, chọn perpage, di chuyển giữa các page => vẫn gọi API
+
+  // khi bấm nút search => call API
+
+  // khi sort thì call API

@@ -3,125 +3,101 @@ import "./App.css";
 import Pagination from "../components/Pagination/Pagination";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SearchResults from "../components/Search/SearchResults";
-import { useNavigate, useLocation } from "react-router-dom";
+import {  useSearchParams } from "react-router-dom";
 import { getData } from "../api";
-
+import "@fortawesome/fontawesome-free/css/all.min.css"; 
 function Main() {
-  const ListData = [
-    { name: "Toán", author: "BGD", SX: "2022" },
-    { name: "Toán 2", author: "BGD", SX: "2023" },
-    { name: "Toán 3", author: "BGD", SX: "2024" },
-    { name: "Toán 4", author: "BGD", SX: "2024" },
-    { name: "Toán 5", author: "BGD", SX: "2024" },
-    { name: "Toán 6", author: "BGD", SX: "2024" },
-    { name: "Toán 7", author: "BGD", SX: "2024" },
-    { name: "Toán 8", author: "BGD", SX: "2024" },
-    { name: "Toán 9", author: "BGD", SX: "2024" },
-    { name: "Toán 10", author: "BGD", SX: "2024" },
-    { name: "Toán 11", author: "BGD", SX: "2024" },
-    { name: "Toán 12", author: "BGD", SX: "2024" },
-    { name: "Toán ĐH", author: "BGD", SX: "2024" },
-    { name: "Toán CC", author: "BGD", SX: "2024" },
-    { name: "Toán NC", author: "BGD", SX: "2024" },
-    { name: "Văn", author: "BGD", SX: "2022" },
-    { name: "Văn 2", author: "BGD", SX: "2023" },
-    { name: "Văn 3", author: "BGD", SX: "2024" },
-    { name: "Anh", author: "BGD", SX: "2022" },
-    { name: "Anh 2", author: "BGD", SX: "2023" },
-    { name: "Anh 3", author: "BGD", SX: "2024" },
-    { name: "Lí", author: "BGD", SX: "2024" },
-    { name: "Hóa", author: "BGD", SX: "2024" },
-    { name: "Sinh", author: "BGD", SX: "2024" },
-    { name: "Sử", author: "BGD", SX: "2024" },
-    { name: "Địa", author: "BGD", SX: "2024" },
-    { name: "Công nghệ", author: "BGD", SX: "2024" },
-    { name: "Công dân", author: "BGD", SX: "2024" },
-  ];
-
   const [books, setBooks] = useState([]);
   const [newBook, setNewBook] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(2);
-
-  const navigate = useNavigate();
-
-  const useQuery = () => {
-    return new URLSearchParams(useLocation().search);
-  };
-
-  let query = useQuery();
+  const [searchKey, setSearchKey] = useState("name");
+  const [page, setPage] = useState({ totalPage: 0, pageActive: 1, perPage: 3 });
+  const [sortOrder, setSortOrder] = useState("asc"); 
+  const [sortKey, setSortKey] = useState("SX");
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const goToPage = (pageNumber) => {
-    query.set("page", pageNumber || 1);
-    query.set("query", newBook);
-    navigate(`/search?${query.toString()}`);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("page", pageNumber || 1);
+    newParams.set("query", newBook);
+    setSearchParams(newParams);
   };
 
   useEffect(() => {
-    const queryPage = query.get("page");
-    const queryBook = query.get("query");
-    if (queryPage) {
+    const queryPage = searchParams.get("page");
+    const queryBook = searchParams.get("query");
+
+    if (queryPage && parseInt(queryPage, 10) !== currentPage) {
       setCurrentPage(parseInt(queryPage, 10));
     }
-    if (queryBook) {
+    if (queryBook && queryBook !== newBook) {
       setNewBook(queryBook);
-      const results = ListData.filter((item) =>
-        item.name.toLowerCase().includes(queryBook.toLowerCase())
-      );
-      setBooks(results);
     }
-  }, []);
+  }, [searchParams]);
 
+  const handleSearch = () => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("page", 1);
+    newParams.set("query", newBook);
+    setSearchParams(newParams);
+
+      const { list, page: pageData } = getData({
+      searchKey: searchKey,
+      searchValue: newBook,
+      sortBy: sortOrder,
+      sortKey: sortKey,
+      perPage: page.perPage,
+      pageActive: currentPage,
+    });
+
+    setBooks(list);
+    setPage(pageData);
+  
+  };
   const handleDeleteBook = (index) => {
     const copyBooks = [...books];
     copyBooks.splice(index, 1);
     setBooks(copyBooks);
   };
 
-  const handleSearchBook = () => {
-    const results = ListData.filter((item) =>
-      item.name.toLowerCase().includes(newBook.toLowerCase())
-    );
-    setBooks(results);
-
-    const totalPages = Math.ceil(results.length / itemsPerPage);
-    const newCurrentPage = currentPage > totalPages ? totalPages : currentPage;
-    setCurrentPage(newCurrentPage);
-
-    goToPage(newCurrentPage);
+  const handleSearchKeyChange = (event) => {
+    setSearchKey(event.target.value);
   };
 
-  const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
-  const indexOfLastItem = indexOfFirstItem + itemsPerPage;
-  const itemPage = books.slice(indexOfFirstItem, indexOfLastItem);
+  useEffect(() => {
+    const { list, page: pageData } = getData({
+      searchKey: searchKey,
+      searchValue: newBook,
+      sortBy: sortOrder,
+      sortKey: sortKey,
+      perPage: page.perPage,
+      pageActive: currentPage,
+    });
 
-  console.log(
-    getData({
-      searchKey: "name",
-      searchValue: "Toán",
-      sortBy: "asc",
-      sortKey: "SX",
-      perPage: 5,
-      pageActive: 2,
-    })
-  );
-  getData({
-    searchKey: "name",
-    searchValue: "Toán",
-    sortBy: "asc",
-    sortKey: "SX",
-    perPage: 5,
-    pageActive: 2,
-  });
+    setBooks(list);
+    setPage(pageData);
+  }, [searchKey, currentPage,sortOrder,sortKey]);
+  console.log(books);
 
-  // init page => khởi tạo dữ liệu theo url => useEffect để sau khi láy hết dữ liệu từ url thì get list init về
+  const handleSort = (key) => {
+    if (sortKey === key) {
+      
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+     
+      setSortKey(key);
+      setSortOrder("asc");
+    }
+  };
 
-  // các hàm xử lý phân trang, chọn perpage, di chuyển giữa các page => vẫn gọi API
-
-  // khi bấm nút search => call API
-
-  // khi sort thì call API
-
+  const getSortIcon = (key) => {
+    if (sortKey !== key) return null;
+    return sortOrder === "asc" ? (
+      <i className="fas fa-arrow-up"></i>
+    ) : (
+      <i className="fas fa-arrow-down"></i>
+    );
+  };
   return (
     <div className="table-container">
       <h1>Các loại sách</h1>
@@ -132,7 +108,14 @@ function Main() {
           onChange={(e) => setNewBook(e.target.value)}
           placeholder="Nhập sách"
         ></input>
-        <button onClick={handleSearchBook}>Tìm kiếm</button>
+        <select onChange={handleSearchKeyChange}>
+          <option value="name">Tìm kiếm theo tên</option>
+          <option value="SX">Tìm kiếm theo năm phát hành</option>
+        </select>
+        <button onClick={handleSearch}>Tìm kiếm</button>
+      </div>
+      <div className="sort">
+       
       </div>
       <table>
         <thead>
@@ -140,21 +123,21 @@ function Main() {
             <th>STT</th>
             <th>Tên Sách</th>
             <th>Tác giả</th>
-            <th>Năm phát hành</th>
+            <th onClick={() => handleSort("SX")}>
+              Năm phát hành {getSortIcon("SX")}
+            </th>
             <th>Hành Động</th>
           </tr>
         </thead>
         <tbody>
           <SearchResults
-            itemPage={itemPage || []}
+            itemPage={books || []}
             handleDeleteBook={handleDeleteBook}
           />
         </tbody>
       </table>
-
       <Pagination
-        totalItems={books.length}
-        itemsPerPage={itemsPerPage}
+        totalPages={page.totalPage}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         goToPage={goToPage}
