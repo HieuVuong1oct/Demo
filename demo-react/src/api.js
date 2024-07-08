@@ -68,7 +68,7 @@ const getData = ({
       index >= (pageActive - 1) * perPage && index < pageActive * perPage
   );
 
-  console.log(pageActive);
+  console.log(pageActive, list);
   return {
     list,
     page: {
@@ -76,7 +76,7 @@ const getData = ({
       pageActive,
       perPage,
     },
-    searchValue
+   
   };
 };
 
