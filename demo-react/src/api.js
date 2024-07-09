@@ -1,7 +1,6 @@
 const LIST_DATA = [
   { name: "Toán 2", author: "BGD", SX: "2023" },
   { name: "Toán", author: "BGD", SX: "2022" },
-
   { name: "Toán 3", author: "BGD", SX: "2024" },
   { name: "Toán 4", author: "BGD", SX: "2024" },
   { name: "Toán 5", author: "BGD", SX: "2024" },
@@ -50,7 +49,6 @@ const getData = ({
   pageActive,
   perPage,
 }) => {
-  
   let database = JSON.parse(JSON.stringify(LIST_DATA));
 
   // lay danh sach thoa man searchKey + searchValue
@@ -68,7 +66,7 @@ const getData = ({
       index >= (pageActive - 1) * perPage && index < pageActive * perPage
   );
 
-  console.log(pageActive, list);
+ console.log('call api')
   return {
     list,
     page: {
@@ -76,17 +74,15 @@ const getData = ({
       pageActive,
       perPage,
     },
-   
   };
 };
 
 export { getData };
 
+// init page => khởi tạo dữ liệu theo url => useEffect để sau khi láy hết dữ liệu từ url thì get list init về
 
- // init page => khởi tạo dữ liệu theo url => useEffect để sau khi láy hết dữ liệu từ url thì get list init về
+// các hàm xử lý phân trang, chọn perpage, di chuyển giữa các page => vẫn gọi API
 
-  // các hàm xử lý phân trang, chọn perpage, di chuyển giữa các page => vẫn gọi API
+// khi bấm nút search => call API
 
-  // khi bấm nút search => call API
-
-  // khi sort thì call API
+// khi sort thì call API

@@ -17,3 +17,7 @@ button{
     cursor: default;
 }
 
+.Pagination{
+  display: flex;
+  flex-wrap: nowrap;
+}

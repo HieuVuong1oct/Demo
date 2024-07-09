@@ -1,6 +1,6 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import './perpage.css'
 const PerPage = ({perPage, handlePerPageChange}) => {
     return (
         <>

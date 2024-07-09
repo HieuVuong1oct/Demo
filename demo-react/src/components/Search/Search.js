@@ -1,13 +1,14 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-const Search = ({newBook, setNewBook, handleSearchKeyChange, handleSearch}) => {
+import './search.css'
+const Search = ({newBook, handleInputChange, handleSearchKeyChange,handleKeyPress, handleSearch}) => {
     return(
         <div className="add">
         <input
           type="text"
           value={newBook}
-          onChange={(e) => setNewBook(e.target.value)}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyPress}
           placeholder="Nhập sách"
         ></input>
         <select onChange={handleSearchKeyChange}>

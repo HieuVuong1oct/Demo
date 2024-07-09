@@ -8,7 +8,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import Search from "../components/Search/Search";
 import Table from "../components/Table/Table";
 import PerPage from "../components/PerPage/PerPage";
-function Main() {
+function App() {
   const [books, setBooks] = useState([]);
   const [newBook, setNewBook] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -18,7 +18,7 @@ function Main() {
   const [sortKey, setSortKey] = useState("SX");
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const goToPage = (pageNumber, searchKey, sortOrder, perPage) => {
+  const goToPage = (pageNumber, searchKey, newBook,sortOrder, perPage) => {
     const newParams = new URLSearchParams(searchParams);
     newParams.set("page", pageNumber || 1);
     newParams.set("searchKey", searchKey);
@@ -27,16 +27,32 @@ function Main() {
     newParams.set("perPage", perPage);
     setSearchParams(newParams);
   };
+ 
+  useEffect(() => {
+    const { list, page: pageData } = getData({
+      searchKey: searchKey,
+      searchValue: newBook,
+      sortBy: sortOrder,
+      sortKey: sortKey,
+      perPage: page.perPage,
+      pageActive: currentPage,
+    });
+console.log(11111111)
+    setBooks(list);
+    setPage(pageData);
+    
+  }, [searchKey, currentPage,newBook,  sortOrder, sortKey, page.perPage]);
+
 
   useEffect(() => {
-    try{
-
-    
+   
     const queryPage = searchParams.get("page");
     const queryBook = searchParams.get("query");
     const querySearchKey = searchParams.get("searchKey");
     const querySortOrder = searchParams.get("sortOrder");
     const queryPerPage = searchParams.get("perPage");
+    
+    
     if (queryPage && parseInt(queryPage, 10) !== currentPage) {
       setCurrentPage(parseInt(queryPage, 10));
     }
@@ -51,16 +67,16 @@ function Main() {
     }
     if (queryPerPage && parseInt(queryPerPage, 10) !== page.perPage) {
       setPage({
-        totalPage: page.perPage,
+        totalPage: page.totalPage,
         pageActive: page.pageActive,
         perPage: parseInt(queryPerPage, 10),
       });
     }
-  }catch(error) {
-    console.error("Error ", error);
-  }
-  },  [searchParams]);
-  
+    
+console.log(22222,searchParams.get("query"))
+  }, [searchParams,currentPage,newBook,searchKey,sortOrder,page]);
+
+  console.log(3333)
   const handleSearch = () => {
     const { list, page: pageData } = getData({
       searchKey: searchKey,
@@ -74,18 +90,23 @@ function Main() {
     setBooks(list);
     setPage(pageData);
 
-    goToPage(1, searchKey, sortOrder, page.perPage);
+    goToPage(1, searchKey, newBook,sortOrder, page.perPage);
   };
+
   const handleDeleteBook = (index) => {
     const copyBooks = [...books];
     copyBooks.splice(index, 1);
     setBooks(copyBooks);
   };
 
+  const handleInputChange = (e) => {
+    setNewBook(e.target.value);
+  };
+
   const handleSearchKeyChange = (event) => {
     let newSearchKey = event.target.value;
     setSearchKey(newSearchKey);
-    goToPage(1, newSearchKey, sortOrder, page.perPage);
+    goToPage(1, newSearchKey,newBook,sortOrder, page.perPage);
   };
 
   const handlePerPageChange = (event) => {
@@ -96,22 +117,10 @@ function Main() {
       perPage: newPerPage,
     });
     setCurrentPage(1);
-    goToPage(1, searchKey, sortOrder, newPerPage);
+    goToPage(1, searchKey, newBook,sortOrder, newPerPage);
   };
- 
-  useEffect(() => {
-    const { list, page: pageData } = getData({
-      searchKey: searchKey,
-      searchValue: newBook,
-      sortBy: sortOrder,
-      sortKey: sortKey,
-      perPage: page.perPage,
-      pageActive: currentPage,
-    });
 
-    setBooks(list);
-    setPage(pageData);
-  }, [searchKey, currentPage, sortOrder, sortKey, page.perPage]);
+
 
   const handleSort = (key) => {
     let newSortOrder = "asc";
@@ -121,7 +130,7 @@ function Main() {
       setSortKey(key);
     }
     setSortOrder(newSortOrder);
-    goToPage(currentPage, searchKey, newSortOrder, page.perPage);
+    goToPage(currentPage, searchKey,newBook, newSortOrder, page.perPage);
   };
 
   const getSortIcon = (key) => {
@@ -132,13 +141,21 @@ function Main() {
       <i className="fas fa-arrow-down"></i>
     );
   };
+
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   return (
     <div className="table-container">
       <h1>Các loại sách</h1>
       <Search
         newBook={newBook}
-        setNewBook={setNewBook}
+        handleInputChange={handleInputChange}
         handleSearchKeyChange={handleSearchKeyChange}
+        handleKeyPress={handleKeyPress}
         handleSearch={handleSearch}
       />
 
@@ -167,4 +184,4 @@ function Main() {
   );
 }
 
-export default Main;
+export default App;

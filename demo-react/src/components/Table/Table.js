@@ -1,6 +1,7 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SearchResults from "../Search/SearchResults";
+import './table.css'
 const Table = ({handleSort, getSortIcon, books, handleDeleteBook}) => {
     return (
         <>
