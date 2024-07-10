@@ -1,20 +1,24 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SearchResults from "../Search/SearchResults";
-import './table.css'
-const Table = ({handleSort, getSortIcon, books, handleDeleteBook}) => {
-    return (
-        <>
-         <table>
+import "./table.css";
+import { tableData } from "./constant";
+
+const Table = ({ handleSort, getSortIcon, books, handleDeleteBook }) => {
+  return (
+    <>
+      <table>
         <thead>
           <tr>
-            <th>STT</th>
-            <th>Tên Sách</th>
-            <th>Tác giả</th>
-            <th onClick={() => handleSort("SX")}>
-              Năm phát hành {getSortIcon("SX")}
-            </th>
-            <th>Hành Động</th>
+            {tableData.map((item) => (
+              <th
+                key={item.id}
+                onClick={item.sortable ? () => handleSort("SX") : null}
+              >
+                {item.name}{" "}
+                {item.key === "year" && item.sortable && getSortIcon("SX")}{" "}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -24,8 +28,8 @@ const Table = ({handleSort, getSortIcon, books, handleDeleteBook}) => {
           />
         </tbody>
       </table>
-        </>
-    )
-}
+    </>
+  );
+};
 
 export default Table;

@@ -66,7 +66,7 @@ const getData = ({
       index >= (pageActive - 1) * perPage && index < pageActive * perPage
   );
 
- console.log('call api')
+  console.log("call api");
   return {
     list,
     page: {

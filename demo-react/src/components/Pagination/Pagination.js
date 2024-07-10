@@ -8,11 +8,12 @@ const Pagination = ({
   goToPage,
   searchKey,
   sortOrder,
+  newBook,
   perPage,
 }) => {
   const handleClick = (pageNumber) => {
     setCurrentPage(pageNumber);
-    goToPage(pageNumber, searchKey, sortOrder, perPage);
+    goToPage(pageNumber, searchKey, newBook, sortOrder, perPage);
   };
 
   const renderPagination = () => {

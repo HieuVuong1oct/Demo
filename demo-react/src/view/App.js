@@ -17,8 +17,55 @@ function App() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [sortKey, setSortKey] = useState("SX");
   const [searchParams, setSearchParams] = useSearchParams();
+  const [checkParams, setCheckParams] = useState(false);
+  const [checkBooks, setCheckBooks] = useState("");
 
-  const goToPage = (pageNumber, searchKey, newBook,sortOrder, perPage) => {
+  useEffect(() => {
+    if (checkParams) {
+      const { list, page: pageData } = getData({
+        searchKey: searchKey,
+        searchValue: checkBooks,
+        sortBy: sortOrder,
+        sortKey: sortKey,
+        perPage: page.perPage,
+        pageActive: currentPage,
+      });
+
+      setBooks(list);
+      setPage(pageData);
+    }
+  }, [
+    searchKey,
+    currentPage,
+    checkBooks,
+    sortOrder,
+    sortKey,
+    page.perPage,
+    checkParams,
+  ]);
+
+  useEffect(() => {
+    const queryPage = searchParams.get("page") || 1;
+    const queryBook = searchParams.get("query") || "";
+    const querySearchKey = searchParams.get("searchKey") || "name";
+    const querySortOrder = searchParams.get("sortOrder") || "asc";
+    const queryPerPage = searchParams.get("perPage") || 3;
+
+    setCurrentPage(parseInt(queryPage, 10));
+    setCheckBooks(queryBook);
+    setNewBook(queryBook);
+    setSearchKey(querySearchKey);
+    setSortOrder(querySortOrder);
+    setPage((prevPage) => ({
+      ...prevPage,
+      pageActive: parseInt(queryPage, 10),
+      perPage: parseInt(queryPerPage, 10),
+    }));
+
+    setCheckParams(true);
+  }, [searchParams]);
+
+  const goToPage = (pageNumber, searchKey, newBook, sortOrder, perPage) => {
     const newParams = new URLSearchParams(searchParams);
     newParams.set("page", pageNumber || 1);
     newParams.set("searchKey", searchKey);
@@ -27,70 +74,16 @@ function App() {
     newParams.set("perPage", perPage);
     setSearchParams(newParams);
   };
- 
-  useEffect(() => {
-    const { list, page: pageData } = getData({
-      searchKey: searchKey,
-      searchValue: newBook,
-      sortBy: sortOrder,
-      sortKey: sortKey,
-      perPage: page.perPage,
-      pageActive: currentPage,
-    });
-console.log(11111111)
-    setBooks(list);
-    setPage(pageData);
-    
-  }, [searchKey, currentPage,newBook,  sortOrder, sortKey, page.perPage]);
 
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setNewBook(value);
+  };
 
-  useEffect(() => {
-   
-    const queryPage = searchParams.get("page");
-    const queryBook = searchParams.get("query");
-    const querySearchKey = searchParams.get("searchKey");
-    const querySortOrder = searchParams.get("sortOrder");
-    const queryPerPage = searchParams.get("perPage");
-    
-    
-    if (queryPage && parseInt(queryPage, 10) !== currentPage) {
-      setCurrentPage(parseInt(queryPage, 10));
-    }
-    if (queryBook && queryBook !== newBook) {
-      setNewBook(queryBook);
-    }
-    if (querySearchKey && querySearchKey !== searchKey) {
-      setSearchKey(querySearchKey);
-    }
-    if (querySortOrder && querySortOrder !== sortOrder) {
-      setSortOrder(querySortOrder);
-    }
-    if (queryPerPage && parseInt(queryPerPage, 10) !== page.perPage) {
-      setPage({
-        totalPage: page.totalPage,
-        pageActive: page.pageActive,
-        perPage: parseInt(queryPerPage, 10),
-      });
-    }
-    
-console.log(22222,searchParams.get("query"))
-  }, [searchParams,currentPage,newBook,searchKey,sortOrder,page]);
-
-  console.log(3333)
   const handleSearch = () => {
-    const { list, page: pageData } = getData({
-      searchKey: searchKey,
-      searchValue: newBook,
-      sortBy: sortOrder,
-      sortKey: sortKey,
-      perPage: page.perPage,
-      pageActive: currentPage,
-    });
+    setCheckBooks(newBook);
 
-    setBooks(list);
-    setPage(pageData);
-
-    goToPage(1, searchKey, newBook,sortOrder, page.perPage);
+    goToPage(1, searchKey, newBook, sortOrder, page.perPage);
   };
 
   const handleDeleteBook = (index) => {
@@ -99,14 +92,10 @@ console.log(22222,searchParams.get("query"))
     setBooks(copyBooks);
   };
 
-  const handleInputChange = (e) => {
-    setNewBook(e.target.value);
-  };
-
   const handleSearchKeyChange = (event) => {
     let newSearchKey = event.target.value;
     setSearchKey(newSearchKey);
-    goToPage(1, newSearchKey,newBook,sortOrder, page.perPage);
+    goToPage(1, newSearchKey, newBook, sortOrder, page.perPage);
   };
 
   const handlePerPageChange = (event) => {
@@ -117,10 +106,8 @@ console.log(22222,searchParams.get("query"))
       perPage: newPerPage,
     });
     setCurrentPage(1);
-    goToPage(1, searchKey, newBook,sortOrder, newPerPage);
+    goToPage(1, searchKey, newBook, sortOrder, newPerPage);
   };
-
-
 
   const handleSort = (key) => {
     let newSortOrder = "asc";
@@ -130,7 +117,7 @@ console.log(22222,searchParams.get("query"))
       setSortKey(key);
     }
     setSortOrder(newSortOrder);
-    goToPage(currentPage, searchKey,newBook, newSortOrder, page.perPage);
+    goToPage(currentPage, searchKey, newBook, newSortOrder, page.perPage);
   };
 
   const getSortIcon = (key) => {
@@ -157,6 +144,7 @@ console.log(22222,searchParams.get("query"))
         handleSearchKeyChange={handleSearchKeyChange}
         handleKeyPress={handleKeyPress}
         handleSearch={handleSearch}
+        searchKey={searchKey}
       />
 
       <Table
@@ -173,6 +161,7 @@ console.log(22222,searchParams.get("query"))
           goToPage={goToPage}
           searchKey={searchKey}
           sortOrder={sortOrder}
+          newBook={newBook}
           perPage={page.perPage}
         />
         <PerPage
