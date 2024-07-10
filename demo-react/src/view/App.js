@@ -3,7 +3,7 @@ import "./App.css";
 import Pagination from "../components/Pagination/Pagination";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useSearchParams } from "react-router-dom";
-import { getData } from "../api";
+import {  addDataToList, getData } from "../api";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Search from "../components/Search/Search";
 import Table from "../components/Table/Table";
@@ -19,7 +19,9 @@ function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [checkParams, setCheckParams] = useState(false);
   const [checkBooks, setCheckBooks] = useState("");
-
+  const [name, setName] = useState('');
+  const [author,setAuthor] = useState("");
+  const [year, setYear] = useState("")
   useEffect(() => {
     if (checkParams) {
       const { list, page: pageData } = getData({
@@ -135,6 +137,11 @@ function App() {
     }
   };
 
+ const handleAddBook = () => {
+  const newItem = { name: name, author: author, SX: year };
+  addDataToList(newItem,books);
+  console.log(22222222)
+ }
   return (
     <div className="table-container">
       <h1>Các loại sách</h1>
@@ -153,6 +160,27 @@ function App() {
         books={books}
         handleDeleteBook={handleDeleteBook}
       />
+    <div>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Nhập tên sách"
+        />
+        <input
+          type="text"
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
+          placeholder="Nhập tên tác giả"
+        />
+        <input
+          type="text"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+          placeholder="Nhập năm sản xuất"
+        />
+        <button onClick={handleAddBook}>Thêm sách</button>
+      </div>
       <div className="Pagination">
         <Pagination
           totalPages={page.totalPage}
