@@ -20,4 +20,5 @@ button{
 .Pagination{
   display: flex;
   flex-wrap: nowrap;
+  margin-top: 20px;
 }

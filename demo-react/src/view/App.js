@@ -3,11 +3,15 @@ import "./App.css";
 import Pagination from "../components/Pagination/Pagination";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useSearchParams } from "react-router-dom";
-import {  addDataToList, getData } from "../api";
+import { addData, updateData, deleteData, getData } from "../api";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Search from "../components/Search/Search";
 import Table from "../components/Table/Table";
 import PerPage from "../components/PerPage/PerPage";
+import { DeleteBook } from "../components/Modal/deleteBook";
+import { AddBook } from "../components/Modal/addBook";
+import { UpdateBook } from "../components/Modal/updateBook";
+
 function App() {
   const [books, setBooks] = useState([]);
   const [newBook, setNewBook] = useState("");
@@ -19,9 +23,16 @@ function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [checkParams, setCheckParams] = useState(false);
   const [checkBooks, setCheckBooks] = useState("");
-  const [name, setName] = useState('');
-  const [author,setAuthor] = useState("");
-  const [year, setYear] = useState("")
+  const [name, setName] = useState("");
+  const [author, setAuthor] = useState("");
+  const [SX, setSX] = useState("");
+  const [id, setId] = useState("");
+  const [showModalAdd, setShowModalAdd] = useState(false);
+  const [showModalEdit, setShowModalEdit] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  
+
+
   useEffect(() => {
     if (checkParams) {
       const { list, page: pageData } = getData({
@@ -74,6 +85,7 @@ function App() {
     newParams.set("query", newBook);
     newParams.set("sortOrder", sortOrder);
     newParams.set("perPage", perPage);
+
     setSearchParams(newParams);
   };
 
@@ -84,31 +96,13 @@ function App() {
 
   const handleSearch = () => {
     setCheckBooks(newBook);
-
     goToPage(1, searchKey, newBook, sortOrder, page.perPage);
-  };
-
-  const handleDeleteBook = (index) => {
-    const copyBooks = [...books];
-    copyBooks.splice(index, 1);
-    setBooks(copyBooks);
   };
 
   const handleSearchKeyChange = (event) => {
     let newSearchKey = event.target.value;
     setSearchKey(newSearchKey);
     goToPage(1, newSearchKey, newBook, sortOrder, page.perPage);
-  };
-
-  const handlePerPageChange = (event) => {
-    let newPerPage = parseInt(event.target.value, 10);
-    setPage({
-      totalPage: page.perPage,
-      pageActive: page.pageActive,
-      perPage: newPerPage,
-    });
-    setCurrentPage(1);
-    goToPage(1, searchKey, newBook, sortOrder, newPerPage);
   };
 
   const handleSort = (key) => {
@@ -120,6 +114,77 @@ function App() {
     }
     setSortOrder(newSortOrder);
     goToPage(currentPage, searchKey, newBook, newSortOrder, page.perPage);
+  };
+
+  const handleEditBook = (item) => {
+    toggleModalEdit();
+    setId(item.id);
+    setName(item.name);
+    setAuthor(item.author);
+    setSX(item.SX);
+
+    setCheckParams(false);
+  };
+
+  const handleUpdateBook = (e) => {
+    e.preventDefault();
+    toggleModalEdit();
+    setCheckParams(true);
+    const Item = { id, name, author, SX };
+    updateData(id, Item);
+    setName("");
+    setAuthor("");
+    setSX("");
+  };
+
+  const toggleModalEdit = () => {
+    setShowModalEdit(!showModalEdit);
+  };
+
+  const handleDeleteBook = (item) => {
+    deleteData(item.id);
+    setCheckParams(false);
+    setShowConfirm(true);
+  };
+
+  const handleConfirmDelete = () => {
+    setShowConfirm(false);
+    setCheckParams(true);
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirm(false);
+  };
+
+  const handleAdd = () => {
+    
+    setCheckParams(false);
+    toggleModalAdd();
+  };
+
+  const handleAddBook = (e) => {
+   e.preventDefault()
+    const newItem = { name, author, SX };
+    toggleModalAdd();
+    addData(newItem);
+    setName("");
+    setAuthor("");
+    setSX("");
+    setCheckParams(true);
+  };
+
+  const toggleModalAdd = () => {
+    setShowModalAdd(!showModalAdd);
+  };
+  const handlePerPageChange = (event) => {
+    let newPerPage = parseInt(event.target.value, 10);
+    setPage({
+      totalPage: page.perPage,
+      pageActive: page.pageActive,
+      perPage: newPerPage,
+    });
+    setCurrentPage(1);
+    goToPage(1, searchKey, newBook, sortOrder, newPerPage);
   };
 
   const getSortIcon = (key) => {
@@ -137,11 +202,6 @@ function App() {
     }
   };
 
- const handleAddBook = () => {
-  const newItem = { name: name, author: author, SX: year };
-  addDataToList(newItem,books);
-  console.log(22222222)
- }
   return (
     <div className="table-container">
       <h1>Các loại sách</h1>
@@ -158,29 +218,42 @@ function App() {
         handleSort={handleSort}
         getSortIcon={getSortIcon}
         books={books}
+        handleEditBook={handleEditBook}
         handleDeleteBook={handleDeleteBook}
       />
-    <div>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Nhập tên sách"
-        />
-        <input
-          type="text"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-          placeholder="Nhập tên tác giả"
-        />
-        <input
-          type="text"
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
-          placeholder="Nhập năm sản xuất"
-        />
-        <button onClick={handleAddBook}>Thêm sách</button>
-      </div>
+
+      <DeleteBook
+        showConfirm={showConfirm}
+        handleCancelDelete={handleCancelDelete}
+        handleConfirmDelete={handleConfirmDelete}
+      />
+
+      <AddBook
+        handleAdd={handleAdd}
+        toggleModal={toggleModalAdd}
+        showModal={showModalAdd}
+        name={name}
+        setName={setName}
+        author={author}
+        setAuthor={setAuthor}
+        SX={SX}
+        setSX={setSX}
+        handleAddBook={handleAddBook}
+        
+      />
+
+      <UpdateBook
+        toggleModal={toggleModalEdit}
+        showModal={showModalEdit}
+        name={name}
+        setName={setName}
+        author={author}
+        setAuthor={setAuthor}
+        SX={SX}
+        setSX={setSX}
+        handleUpdateBook={handleUpdateBook}
+      />
+
       <div className="Pagination">
         <Pagination
           totalPages={page.totalPage}

@@ -1,0 +1,8 @@
+.btn-primary{
+    background-color: #28a745;
+    border: none;
+}
+
+.form-group > input {
+    width: 100%;
+}

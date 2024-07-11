@@ -4,7 +4,13 @@ import SearchResults from "../Search/SearchResults";
 import "./table.css";
 import { tableData } from "./constant";
 
-const Table = ({ handleSort, getSortIcon, books, handleDeleteBook }) => {
+const Table = ({
+  handleSort,
+  getSortIcon,
+  books,
+  handleEditBook,
+  handleDeleteBook,
+}) => {
   return (
     <>
       <table>
@@ -24,6 +30,7 @@ const Table = ({ handleSort, getSortIcon, books, handleDeleteBook }) => {
         <tbody>
           <SearchResults
             itemPage={books || []}
+            handleEditBook={handleEditBook}
             handleDeleteBook={handleDeleteBook}
           />
         </tbody>
