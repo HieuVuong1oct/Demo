@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./modal.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { Modal } from "./modal";
+
 export const AddBook = ({
   handleAdd,
   toggleModal,
@@ -27,13 +28,14 @@ export const AddBook = ({
         <button type="button" className="btn btn-primary" onClick={handleAdd}>
           <i className="fas fa-plus"></i>
         </button>
+
         {showModal && (
           <Modal>
             <div className="modal-header">
               <h5 className="modal-title">Sách</h5>
             </div>
             <div className="modal-body">
-              <form autocomplete="off">
+              <form>
                 <div className="form-group">
                   <label htmlFor="bookName">Tên sách</label>
                   <input

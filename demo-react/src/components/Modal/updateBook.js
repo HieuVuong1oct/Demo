@@ -9,6 +9,15 @@ export const UpdateBook = ({
   closeModal,
   children,
 }) => {
+  const isFormValid = () => {
+    return (
+      infoItem.name &&
+      infoItem.author &&
+      infoItem.SX &&
+      !isNaN(infoItem.SX) &&
+      Number(infoItem.SX) > 0
+    );
+  };
   return (
     <>
       <div>
@@ -19,7 +28,7 @@ export const UpdateBook = ({
             </div>
             <div className="modal-body">
               {children}
-              <form autocomplete="off">
+              <form>
                 <div className="form-group">
                   <label htmlFor="bookName">Tên sách</label>
                   <input
@@ -73,6 +82,7 @@ export const UpdateBook = ({
                 type="button"
                 className="btn btn-primary"
                 onClick={handleUpdateBook}
+                disabled={!isFormValid()}
               >
                 Cập nhật
               </button>
