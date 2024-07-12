@@ -23,15 +23,15 @@ function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [checkParams, setCheckParams] = useState(false);
   const [checkBooks, setCheckBooks] = useState("");
-  const [name, setName] = useState("");
-  const [author, setAuthor] = useState("");
-  const [SX, setSX] = useState("");
-  const [id, setId] = useState("");
+  const [infoItem, setInfoItem] = useState({
+    id: "",
+    name: "",
+    author: "",
+    SX: "",
+  });
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  
-
 
   useEffect(() => {
     if (checkParams) {
@@ -118,23 +118,32 @@ function App() {
 
   const handleEditBook = (item) => {
     toggleModalEdit();
-    setId(item.id);
-    setName(item.name);
-    setAuthor(item.author);
-    setSX(item.SX);
-
+    setInfoItem({
+      id: item.id,
+      name: item.name,
+      author: item.author,
+      SX: item.SX,
+    });
     setCheckParams(false);
   };
 
-  const handleUpdateBook = (e) => {
-    e.preventDefault();
+  const handleUpdateBook = () => {
+    
     toggleModalEdit();
     setCheckParams(true);
-    const Item = { id, name, author, SX };
-    updateData(id, Item);
-    setName("");
-    setAuthor("");
-    setSX("");
+    const Item = {
+      id: infoItem.id,
+      name: infoItem.name,
+      author: infoItem.author,
+      SX: infoItem.SX,
+    };
+    updateData(infoItem.id, Item);
+    setInfoItem({ name: "", author: "".author, SX: "" });
+  };
+
+  const closeModal = () => {
+    toggleModalEdit();
+    setInfoItem({ name: "", author: "".author, SX: "" });
   };
 
   const toggleModalEdit = () => {
@@ -157,19 +166,20 @@ function App() {
   };
 
   const handleAdd = () => {
-    
     setCheckParams(false);
     toggleModalAdd();
   };
 
-  const handleAddBook = (e) => {
-   e.preventDefault()
-    const newItem = { name, author, SX };
+  const handleAddBook = () => {
+    
+    const newItem = {
+      name: infoItem.name,
+      author: infoItem.author,
+      SX: infoItem.SX,
+    };
     toggleModalAdd();
     addData(newItem);
-    setName("");
-    setAuthor("");
-    setSX("");
+    setInfoItem({ name: "", author: "".author, SX: "" });
     setCheckParams(true);
   };
 
@@ -232,26 +242,17 @@ function App() {
         handleAdd={handleAdd}
         toggleModal={toggleModalAdd}
         showModal={showModalAdd}
-        name={name}
-        setName={setName}
-        author={author}
-        setAuthor={setAuthor}
-        SX={SX}
-        setSX={setSX}
         handleAddBook={handleAddBook}
-        
+        infoItem={infoItem}
+        setInfoItem={setInfoItem}
       />
 
       <UpdateBook
-        toggleModal={toggleModalEdit}
         showModal={showModalEdit}
-        name={name}
-        setName={setName}
-        author={author}
-        setAuthor={setAuthor}
-        SX={SX}
-        setSX={setSX}
         handleUpdateBook={handleUpdateBook}
+        infoItem={infoItem}
+        setInfoItem={setInfoItem}
+        closeModal={closeModal}
       />
 
       <div className="Pagination">

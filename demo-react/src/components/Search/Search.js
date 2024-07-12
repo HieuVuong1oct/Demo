@@ -23,7 +23,7 @@ const Search = ({
         <option value="SX">Tìm kiếm theo năm phát hành</option>
       </select>
       <button className="btnSearch" onClick={handleSearch}>
-        Tìm kiếm
+      <i className="fas fa-search"></i>
       </button>
     </div>
   );
